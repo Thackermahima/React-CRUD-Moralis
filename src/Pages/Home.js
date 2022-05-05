@@ -1,30 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMoralisQuery, useMoralis }  from "react-moralis";
 import './Home.css';
-import { Link, useParams} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const { Moralis } = useMoralis();
-  const { data } = useMoralisQuery("contactFormModal");
-  let removeData;
-  data.map((obj)=>{
+  const { data, fetch } = useMoralisQuery("contactFormModal");
+  const [Pagerefesh, setPageRefresh] = useState(false);
 
-   removeData = async() => {
 
-  const query = new Moralis.Query('contactFormModal')
-  query.equalTo('objectId',obj.id)
- const object = await query.first(({useMasterKey: true}))
-  if(object) {
-    object.destroy().then(() => {
- alert("Deleted Successfully!");
-   }, (error) => {
-      console.log(error);
-    })
-  }
-     }
-    })
+  useEffect(() => {
+    fetch()
+  }, [Pagerefesh])
 
-  return (
+
+      let removeData;
+      data.map((obj)=>{
+        removeData = async() => {
+         const query = new Moralis.Query('contactFormModal')
+         query.equalTo('objectId',obj.id)
+        const object = await query.first(({useMasterKey: true}))
+         if(object) {
+           object.destroy().then(() => {
+        alert("Deleted Successfully!");
+        setPageRefresh(!Pagerefesh)
+          }, (error) => {
+             console.log(error);
+           })
+         }
+            }
+          })
+
+
+   return (
 <div style={{ marginTop:"100px"}}>
 
    <table style={{
@@ -55,8 +63,8 @@ const Home = () => {
            <Link to={`/update/${obj.id}`}>
             <button className='btn btnEdit'>Edit</button>
             </Link>
+            <button className='btn btnDelete' onClick={removeData}>Delete</button>
 
-               <button className='btn btnDelete' onClick={removeData}>Delete</button>
            </td>
           </tr>
         )

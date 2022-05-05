@@ -50,7 +50,7 @@ const ContactDetail = Moralis.Object.extend("contactFormModal");
     
 
 
-  }, [])
+  },[])
    const formik = useFormik({
 
    initialValues: {
